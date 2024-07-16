@@ -16,6 +16,8 @@ export async function POST(req: NextRequest) {
 
         if (!category) { return NextResponse.json({ message: "Invalid category", success: false }, { status: 400 }) }
 
+        console.log(categoryId)
+
         const items = await ItemModel.aggregate([
             {
                 $match: {

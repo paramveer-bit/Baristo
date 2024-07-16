@@ -1,25 +1,25 @@
-"use client";
- 
-import { UploadButton,UploadDropzone } from "@/utils/uploadthing";
- 
-export default function Home() {
+"use client"
 
-  
+import { Button } from "@/components/ui/button"
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
+
+export default function ToastDestructive() {
+  const { toast } = useToast()
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <UploadDropzone
-        endpoint="imageUploader"
-        onClientUploadComplete={(res:any) => {
-          // Do something with the response
-          console.log(res[0].url);
-          alert("Upload Completed");
-        }}
-        onUploadError={(error: Error) => {
-          // Do something with the error.
-          alert(`ERROR! ${error.message}`);
-        }}
-      />
-    </main>
-  );
+    <Button
+      variant="outline"
+      onClick={() => {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "There was a problem with your request.",
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        })
+      }}
+    >
+      Show Toast
+    </Button>
+  )
 }

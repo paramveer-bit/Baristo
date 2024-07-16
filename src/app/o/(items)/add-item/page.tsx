@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { isBase64Image } from "@/lib/utils";
+import itemImage from "@/assets/item-image.svg"
+import axios from 'axios'
 
 import {
   Form,
@@ -16,14 +18,25 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+
 
 import { useUploadThing } from "@/utils/uploadthing";
 import { useRouter } from "next/router"
 import { usePathname } from "next/navigation"
 import { Props } from "next/script"
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import Image from "next/image"
+import { set } from "mongoose"
+import { useToast } from "@/components/ui/use-toast"
 
 
 
@@ -36,14 +49,24 @@ function AddItem() {
             console.log("uploaded successfully!");
         },
         onUploadError: () => {
-            console.log("error occurred while uploading");
+            toast({
+                title : 'Error while uploading image',
+                variant : "destructive"
+            })
         },
         onUploadBegin: () => {
-            console.log("upload has begun");
+            toast({
+                title : 'Upload has begun',
+                className : " border-2 border-green-600"
+            })
         },
     });
     
     const [files, setFiles] = useState<File[]>([]);
+    const [categories,setCategories] = useState([])
+    const [uploading, setUploading] = useState(false);
+    const { toast } = useToast();
+
 
 
     const form = useForm<z.infer<typeof addItemSchema>>({
@@ -54,9 +77,9 @@ function AddItem() {
       })
 
     const onSubmit = async (values: z.infer<typeof addItemSchema>) => {
+        setUploading(true);
+        
         const blob = values.image;
-        console.log(blob);
-    
         const hasImageChanged = isBase64Image(blob);
         if (hasImageChanged) {
           const imgRes = await startUpload(files);
@@ -66,10 +89,28 @@ function AddItem() {
           }
         }
 
+        try {
+            const res = await axios.post('/api/items/create-item',values)
+            toast({
+                title : 'Success',
+                description : res.data.message,
+                className : " border-2 border-green-600"
+            })
+        } catch (error:any) {
+            toast({
+                title : 'Failed',
+                description : error.response?.data.message || "Error in SignUp",
+                variant : "destructive"
+            });
+        }finally{
+            setUploading(false);
+        }
+       
+
     
-        console.log(values);
     
     }
+    
 
     const handleImage = (
         e: ChangeEvent<HTMLInputElement>,
@@ -94,6 +135,26 @@ function AddItem() {
         }
       };
 
+      useEffect(() => {
+        const fetchCategories = async () => {
+          try {
+            const res = await axios.get("/api/category/getall");
+            // Assuming res.data.data is the array of categories you want to set
+            if (res.data && res.data.data) {
+              setCategories(res.data.data);
+            } else {
+              console.error("Unexpected response structure:", res.data);
+            }
+          } catch (error) {
+            // Handle any errors that occurred during the fetch operation
+            console.error("Failed to fetch categories:", error);
+          }
+        };
+      
+        fetchCategories();
+      }, []);
+
+
 
 
   return (
@@ -105,7 +166,7 @@ function AddItem() {
         <div className="w-full p-3 px-4 bg-white rounded-md">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    <div className="flex justify-between">
+                    <div className="flex justify-between space-x-2">
                         {/* Coode */}
                         <FormField
                             control={form.control}
@@ -164,63 +225,103 @@ function AddItem() {
                         />
                     </div>
                     
+                    <div className="flex space-x-9">
                     
-                    {/* Descriptin */}
-                    <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Discription" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-
-                    {/* Image */}
-                    <FormField
+                        {/* Descriptin */}
+                        <FormField
                         control={form.control}
-                        name="image"
+                        name="description"
                         render={({ field }) => (
-                            <FormItem className="flex items-center gap-4">
-                                <FormLabel className="account-form_image-label">
-                                    {field.value ? (
-                                    <Image
-                                        src={field.value}
-                                        alt="profile_icon"
-                                        width={96}
-                                        height={96}
-                                        priority
-                                        className="rounded-full object-contain w-24 h-24"
-                                    />
-                                    ) : (
-                                    <Image
-                                        src="/assets/profile.svg"
-                                        alt="profile_icon"
-                                        width={24}
-                                        height={24}
-                                        className="object-contain"
-                                    />
-                                    )}
-                                </FormLabel>
-                                <FormControl className="flex-1 text-base-semibold text-gray-200">
-                                    <Input
-                                    type="file"
-                                    accept="image/*"
-                                    placeholder="Add profile photo"
-                                    className="account-form_image-input"
-                                    onChange={(e) => handleImage(e, field.onChange)}
-                                    />
+                            <FormItem className="w-[40%]">
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                    <Textarea className=" h-36" placeholder="Discription" {...field} />
                                 </FormControl>
+                                <FormMessage />
                             </FormItem>
                         )}
-                    />
+                        />
+
+                        {/* Image */}
+                        <FormField
+                            control={form.control}
+                            name="image"
+                            render={({ field }) => (
+                                <FormItem className="items-center gap-4 w-56">
+                                    <FormLabel>
+                                        Add Item Image
+                                    </FormLabel>
+                                    <div className=" space-y-3">
+                                        <FormLabel className="account-form_image-label w-full">
+                                            {field.value ? (
+                                            <Image
+                                                src={field.value}
+                                                alt="profile_icon"
+                                                width={100}
+                                                height={100}
+                                                priority
+                                                className="rounded-md object-contain w-52 h-40 border-2"
+                                            />
+                                            ) : (
+                                            <Image
+                                                src={itemImage}
+                                                alt="profile_icon"
+                                                width={24}
+                                                height={24}
+                                                className="object-contain mt-3 h-36 w-48"
+                                            />
+                                            )}
+                                        </FormLabel>
+                                        <FormControl className=" text-base-semibold text-gray-200">
+                                            <Input
+                                            type="file"
+                                            accept="image/*"
+                                            placeholder="Add profile photo"
+                                            className="account-form_image-input text-slate-600"
+                                            onChange={(e) => handleImage(e, field.onChange)}
+                                            />
+                                    </FormControl>
+                                    </div>
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Category */}
+                        <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                            <FormItem className="w-[20%]">
+                                <FormLabel>Category</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a Category" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {categories.length>0?(
+                                                categories.map((category:any)=>(
+                                                    <>
+                                                     <SelectItem value={category._id}>{category.name}</SelectItem>
+
+                                                    </>
+                                                ))
+                                            ):(
+                                            <>
+
+                                            </>
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                    </div>
 
 
-                    <Button type="submit">Submit</Button>
+                    <Button type="submit" disabled={uploading}>Submit</Button>
                 </form>
             </Form>
         </div>
