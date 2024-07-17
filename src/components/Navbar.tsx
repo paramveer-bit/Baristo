@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 
 function Navbar() {
     return (
-        <div className='bg-white flex flex-row justify-between rounded-lg w-52 h-[700px] overflow-hidden'>
+        <div className='bg-white flex flex-row justify-between rounded-lg w-52 h-[700px] fixed overflow-hidden'>
             <div className='pl-2 py-4 h-full mr-4 w-full'>
                 <div className='text-3xl font-bold px-2 flex justify-between'>
                         Baristo
@@ -39,13 +39,13 @@ function Navbar() {
                         <AccordionItem value="item-2">
                             <AccordionTrigger>Menu</AccordionTrigger>
                             <AccordionContent >
-                                Menu List
+                                <Link href="/o/menu">Menu List</Link>
                             </AccordionContent>
                             <AccordionContent >
                                 Categories
                             </AccordionContent>
                             <AccordionContent >
-                                Add Item
+                                <Link href="/o/add-item">Add Item</Link>
                             </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-3">

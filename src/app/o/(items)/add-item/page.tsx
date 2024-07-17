@@ -158,7 +158,7 @@ function AddItem() {
 
 
   return (
-    <div className=" w-full mx-3 p-3"> 
+    <div className=" w-full mx-3 p-3 ml-52"> 
         <div >
             <h1 className=" my-5 m-3 text-4xl font-semibold">Add New Item</h1>
         </div>
@@ -223,69 +223,6 @@ function AddItem() {
                             </FormItem>
                         )}
                         />
-                    </div>
-                    
-                    <div className="flex space-x-9">
-                    
-                        {/* Descriptin */}
-                        <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                            <FormItem className="w-[40%]">
-                                <FormLabel>Description</FormLabel>
-                                <FormControl>
-                                    <Textarea className=" h-36" placeholder="Discription" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-
-                        {/* Image */}
-                        <FormField
-                            control={form.control}
-                            name="image"
-                            render={({ field }) => (
-                                <FormItem className="items-center gap-4 w-56">
-                                    <FormLabel>
-                                        Add Item Image
-                                    </FormLabel>
-                                    <div className=" space-y-3">
-                                        <FormLabel className="account-form_image-label w-full">
-                                            {field.value ? (
-                                            <Image
-                                                src={field.value}
-                                                alt="profile_icon"
-                                                width={100}
-                                                height={100}
-                                                priority
-                                                className="rounded-md object-contain w-52 h-40 border-2"
-                                            />
-                                            ) : (
-                                            <Image
-                                                src={itemImage}
-                                                alt="profile_icon"
-                                                width={24}
-                                                height={24}
-                                                className="object-contain mt-3 h-36 w-48"
-                                            />
-                                            )}
-                                        </FormLabel>
-                                        <FormControl className=" text-base-semibold text-gray-200">
-                                            <Input
-                                            type="file"
-                                            accept="image/*"
-                                            placeholder="Add profile photo"
-                                            className="account-form_image-input text-slate-600"
-                                            onChange={(e) => handleImage(e, field.onChange)}
-                                            />
-                                    </FormControl>
-                                    </div>
-                                </FormItem>
-                            )}
-                        />
-
                         {/* Category */}
                         <FormField
                         control={form.control}
@@ -319,9 +256,71 @@ function AddItem() {
                         )}
                         />
                     </div>
+                    
+                    <div className="flex space-x-14">
+                        {/* Descriptin */}
+                        <FormField
+                        control={form.control}
+                        name="description"
+                        render={({ field }) => (
+                            <FormItem className="w-[50%]">
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                    <Textarea className=" h-36" placeholder="Discription" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        {/* Image */}
+                        <FormField
+                            control={form.control}
+                            name="image"
+                            render={({ field }) => (
+                                <FormItem className="items-center gap-4 w-56">
+                                    <FormLabel>
+                                        Add Item Image
+                                    </FormLabel>
+                                    <div className=" space-y-2">
+                                        <FormLabel className="account-form_image-label w-full">
+                                            {field.value ? (
+                                            <Image
+                                                src={field.value}
+                                                alt="profile_icon"
+                                                width={100}
+                                                height={100}
+                                                priority
+                                                className="rounded-md object-contain w-52 h-40 border-2"
+                                            />
+                                            ) : (
+                                            <Image
+                                                src={itemImage}
+                                                alt="profile_icon"
+                                                width={24}
+                                                height={24}
+                                                className="object-contain mt-3 h-24 w-24"
+                                            />
+                                            )}
+                                        </FormLabel>
+                                        <FormControl className=" text-base-semibold text-gray-200">
+                                            <Input
+                                            type="file"
+                                            accept="image/*"
+                                            placeholder="Add profile photo"
+                                            className="account-form_image-input text-slate-600"
+                                            onChange={(e) => handleImage(e, field.onChange)}
+                                            />
+                                    </FormControl>
+                                    </div>
+                                </FormItem>
+                            )}
+                        />
+
+                        
+                    </div>
 
 
-                    <Button type="submit" disabled={uploading}>Submit</Button>
+                    <Button type="submit" disabled={uploading} className="bg-blue-500">Submit</Button>
                 </form>
             </Form>
         </div>
