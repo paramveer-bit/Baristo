@@ -87,6 +87,10 @@ function AddItem() {
           if (imgRes && imgRes[0].url) {
             values.image = imgRes[0].url;
           }
+          else{
+            setUploading(false) 
+            return
+          }
         }
 
         try {

@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
         const { name, image } = await req.json()
 
         const category = await CategoryModel.findOne({ name: name })
-        console.log(category)
 
         if (category) { return NextResponse.json({ message: "Category name should be unique", success: false }, { status: 400 }) }
 

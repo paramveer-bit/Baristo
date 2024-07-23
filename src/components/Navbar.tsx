@@ -42,7 +42,7 @@ function Navbar() {
                                 <Link href="/o/menu">Menu List</Link>
                             </AccordionContent>
                             <AccordionContent >
-                                Categories
+                                <Link href="/o/categories">Categories</Link>
                             </AccordionContent>
                             <AccordionContent >
                                 <Link href="/o/add-item">Add Item</Link>

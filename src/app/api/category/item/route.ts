@@ -26,8 +26,13 @@ export async function POST(req: NextRequest) {
             }
         ])
 
+        if (!items) {
+            return NextResponse.json({ success: false, message: "No items found", data: [] }, {
+                status: 200
+            })
+        }
 
-        return NextResponse.json({ success: true, message: "Item Found", data: items }, { status: 200 });
+        return NextResponse.json({ success: true, message: "Item Found", data: items, name: category.name }, { status: 200 });
 
     } catch (error) {
         return NextResponse.json({ success: false, error: error, message: "Something went wrong while finding items" }, { status: 500 })

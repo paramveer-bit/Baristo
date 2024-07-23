@@ -3,19 +3,23 @@
 import axios from 'axios'
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import { columns } from "./columns"
-import { DataTable } from "../../../../components/data-table"
+import { DataTable } from "@/components/data-table"
 import itemImage from "@/assets/item-image.svg"
 import Image from 'next/image'
 import { ColumnFiltersState } from '@tanstack/react-table'
 import { Input } from '@/components/ui/input'
 import { any } from 'zod'
 import { useToast } from "@/components/ui/use-toast"
+import { useParams } from 'next/navigation'
 
 
 
 function Menu() {
+    const param = useParams<{category:string}>()
+
 
     const[menu,setmenu] = useState([])
+    const[categoryName,setCategoryName] = useState('')
     const [filterCode,setFilterCode] = React.useState('');
     const { toast } = useToast();
 
@@ -24,8 +28,19 @@ function Menu() {
     useEffect(()=>{
         const  fecthItems = async()=>{
             try {
-                const res = await axios.get('/api/items/get-all')
+                const res = await axios.post('/api/category/item',{
+                    categoryId: param.category
+                })
+                console.log(res.data)
+                if(res.data.data.length === 0){
+                    toast({
+                        title : 'No Items',
+                        description : "No items found in this category",
+                        variant : "destructive"
+                    });
+                }
                 setmenu(res.data.data)
+                setCategoryName(res.data.name)
             } catch (error:any) {
                 toast({
                     title : 'Failed',
@@ -43,7 +58,7 @@ function Menu() {
             
     
         <div className=' flex justify-between mx-4' >
-            <h1 className=" my-3 text-2xl font-semibold">Menu List</h1>
+            <h1 className=" my-3 text-2xl font-semibold">Categories -{">"} {categoryName} -{">"} Menu List</h1>
             <Input 
                 placeholder='Enter Item Code'
                 className='h-10 rounded-lg my-auto w-auto'
