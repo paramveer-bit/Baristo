@@ -13,6 +13,11 @@ export async function GET(req: NextRequest, { params }: { params: { orderid: str
     try {
         const orderid = params.orderid;
 
+        if (!mongoose.Types.ObjectId.isValid(orderid)) {
+            return NextResponse.json({ success: false, message: "Invalid OrderId" }, { status: 401 })
+        }
+
+
         const order = await OrderModel.aggregate([
             {
                 $match: {
@@ -28,28 +33,39 @@ export async function GET(req: NextRequest, { params }: { params: { orderid: str
                     localField: "items.orderItem",
                     foreignField: "_id",
                     as: "orderItemDetails"
-                }
+
+                },
             },
             {
                 $unwind: '$orderItemDetails'
             },
             {
+                $addFields: {
+                    "orderItemDetails.quantity": "$items.quantity"
+                }
+            },
+            {
                 $group: {
                     _id: "$_id",
+                    name: { $first: "$name" }, // Assuming there's a single name per group
+                    phoneNo: { $first: "$phoneNo" },
+                    tableNo: { $first: "$tableNo" },
+                    orderNo: { $first: "$orderNo" },
+                    status: { $first: "$status" },
+                    createdAt: { $first: "$createdAt" },
+                    orderValue: { $first: "$orderValue" },
                     items: {
-                        $push: {
-                            item: "$orderItemDetails",
-                            quantity: "$items.quantity"
-                        }
+                        $push: "$orderItemDetails"
                     }
+
                 }
-            }
+            },
         ])
         if (!order) { return NextResponse.json({ message: "No order found", success: false }, { status: 400 }) }
 
 
 
-        return NextResponse.json({ success: true, message: "Order Found", data: order }, { status: 200 });
+        return NextResponse.json({ success: true, message: "Order Found", data: order[0] }, { status: 200 });
 
     } catch (error) {
         return NextResponse.json({ success: false, error: error, message: "Something went wrong while fetching this order" }, { status: 500 })

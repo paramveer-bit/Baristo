@@ -11,6 +11,7 @@ export async function PATCH(req: NextRequest) {
     await dbConnect()
     try {
         const { orderId, status } = await req.json()
+        console.log(orderId, status)
         const order = await OrderModel.findById(orderId)
         if (!order) {
             return NextResponse.json({ successs: false, message: "No orders Found " }, { status: 400 })

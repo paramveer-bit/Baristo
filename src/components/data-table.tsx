@@ -30,13 +30,14 @@ import { Input } from "@/components/ui/input"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  code: string
+  code?: string
+  accessorKey ?: string
 }
 
 
 
 
-export function DataTable<TData, TValue>({columns,data,code}: DataTableProps<TData, TValue>){
+export function DataTable<TData, TValue>({columns,data,code,accessorKey}: DataTableProps<TData, TValue>){
 
     
     
@@ -49,7 +50,7 @@ export function DataTable<TData, TValue>({columns,data,code}: DataTableProps<TDa
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(), 
-    onColumnFiltersChange: setColumnFilters,
+    onColumnFiltersChange: setColumnFilters,  
     getFilteredRowModel: getFilteredRowModel(),
     state: {
         columnFilters,
@@ -57,11 +58,14 @@ export function DataTable<TData, TValue>({columns,data,code}: DataTableProps<TDa
     })
 
     useEffect(()=>{
-        const column = table.getColumn("code");
+      if (accessorKey) { // Only proceed if accessorKey is defined
+        console.log(accessorKey);
+        const column = table.getColumn(`${accessorKey}`);
         if (column) { // Handling null explicitly
-            table.getColumn("code")?.setFilterValue(code)
+          table.getColumn(`${accessorKey}`)?.setFilterValue(code);
         }
-    },[code,table])
+      }
+    },[code,table,accessorKey])
 
   return (
     <div className="rounded-md border bg-white my-5">

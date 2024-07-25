@@ -20,22 +20,10 @@ function Navbar() {
                 <div className=' mt-20 mx-2 w-full pr-2'>
                     <Accordion type="single" collapsible>
                         <h1 className=' flex flex-1 items-center justify-between py-4 font-medium border-b'> Dashboard</h1>
-                        <AccordionItem value="item-1">
-                            <AccordionTrigger>Orders</AccordionTrigger>
-                            <AccordionContent >
-                                All Orders
-                            </AccordionContent>
-                            <AccordionContent >
-                                Delivered
-                            </AccordionContent>
-                            <AccordionContent >
-                                Pending
-                            </AccordionContent>
-                            <AccordionContent >
-                                Cancled
-                            </AccordionContent>
+                        <h1 className=' flex flex-1 items-center justify-between py-4 font-medium border-b'>
+                            <Link href="/o/orders"> All Orders </Link>
+                        </h1>
                             
-                        </AccordionItem>
                         <AccordionItem value="item-2">
                             <AccordionTrigger>Menu</AccordionTrigger>
                             <AccordionContent >
@@ -46,12 +34,6 @@ function Navbar() {
                             </AccordionContent>
                             <AccordionContent >
                                 <Link href="/o/add-item">Add Item</Link>
-                            </AccordionContent>
-                        </AccordionItem>
-                        <AccordionItem value="item-3">
-                            <AccordionTrigger>Menu items</AccordionTrigger>
-                            <AccordionContent>
-                            Yes. It adheres to the WAI-ARIA design pattern.
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>
